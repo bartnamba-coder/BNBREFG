@@ -107,6 +107,13 @@ export const buyTokenWithReferrerCall = {
   watch: true,
 };
 
+//buy token write with attestation
+export const buyTokenWithAttestationCall = {
+  ...presaleContractConfig,
+  functionName: "buyToken",
+  watch: true,
+};
+
 //ETH to USD exchange rate
 export const GetUSDExchangeRate = async () => {
   var requestOptions = { method: "GET", redirect: "follow" };

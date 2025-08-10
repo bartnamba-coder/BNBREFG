@@ -16,6 +16,7 @@ import { formatEther, formatUnits, parseEther } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import PropTypes from "prop-types";
 import { getReferrerForPurchase, processReferralFromURL } from "./referralManager";
+import { prepareAttestedBuyTokenCall } from "./attestedReferralBuy";
 
 const PresaleContextProvider = ({ children }) => {
   const { openConnectModal } = useConnectModal();
@@ -230,7 +231,7 @@ const PresaleContextProvider = ({ children }) => {
   };
 
   // Function to execute token purchase
-  const buyToken = () => {
+  const buyToken = async () => {
     /* ── 1. User must be connected ─────────────────────────── */
     if (!isConnected) {
       openConnectModal();
@@ -268,23 +269,34 @@ const PresaleContextProvider = ({ children }) => {
     /* ── 5. All good → call the contract ────────────────────── */
     setPresaleStatus(null);
   
-    // Get referrer address for purchase
-    const referrerAddress = getReferrerForPurchase();
-    
-    // Use the referrer-enabled function if we have a referrer, otherwise use legacy
-    const contractCall = referrerAddress && referrerAddress !== '0x0000000000000000000000000000000000000000'
-      ? {
-          ...configModule.buyTokenWithReferrerCall,
-          args: [referrerAddress],
-          value: parseEther(paymentPrice.toString()),
-        }
-      : {
-          ...configModule.buyTokenCall,
-          args: [],
-          value: parseEther(paymentPrice.toString()),
-        };
-    
-    writeContract(contractCall);
+    try {
+      // Get referrer address for purchase
+      const referrerAddress = getReferrerForPurchase();
+      const paymentValue = parseEther(paymentPrice.toString());
+      
+      // Show loading message while preparing attestation
+      if (referrerAddress && referrerAddress !== '0x0000000000000000000000000000000000000000') {
+        setPresaleStatus("Preparing transaction with referral bonus...");
+      }
+      
+      // Prepare the contract call with attestation if we have a referrer
+      const contractCall = await prepareAttestedBuyTokenCall(
+        configModule,
+        referrerAddress,
+        paymentValue,
+        chainId
+      );
+      
+      // Clear status before sending transaction
+      setPresaleStatus(null);
+      
+      // Execute the contract call
+      writeContract(contractCall);
+    } catch (error) {
+      console.error("Error preparing purchase:", error);
+      setPresaleStatus("Error preparing purchase. Please try again.");
+      return;
+    }
   
     makeEmptyInputs();                  // clear the form
   };
