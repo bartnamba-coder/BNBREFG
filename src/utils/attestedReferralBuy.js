@@ -2,10 +2,9 @@
 // Enhanced referral purchase with attestation support
 
 import { getAttestation } from '../services/attestationService';
-import { getMockAttestation } from '../services/mockAttestationService';
 
-// Flag to use mock service for testing
-const USE_MOCK_SERVICE = true;
+// Flag to use mock service for testing - set to false since mock service is removed
+const USE_MOCK_SERVICE = false;
 
 /**
  * Prepare the contract call for buying tokens with attestation
@@ -27,10 +26,8 @@ export const prepareAttestedBuyTokenCall = async (configModule, referrerAddress,
       };
     }
 
-    // Get attestation from the backend or mock service
-    const attestation = USE_MOCK_SERVICE 
-      ? await getMockAttestation(referrerAddress, paymentAmount.toString(), chainId)
-      : await getAttestation(referrerAddress, paymentAmount.toString(), chainId);
+    // Get attestation from the backend
+    const attestation = await getAttestation(referrerAddress, paymentAmount.toString(), chainId);
 
     console.log('Attestation received:', attestation);
 

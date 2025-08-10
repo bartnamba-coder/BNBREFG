@@ -31,4 +31,4 @@ See `CORS_FIX_GUIDE.md` for detailed implementation instructions.
 
 - These changes should be applied to your Hostinger server
 - No changes to the frontend code are required
-- The mock attestation service for local testing is still available in this branch
+- The mock attestation service for local testing has been removed from this branch
