@@ -1,7 +1,11 @@
 // src/utils/attestedReferralBuy.js
 // Enhanced referral purchase with attestation support
 
-import { getAttestation, formatAttestationForContract } from '../services/attestationService';
+import { getAttestation } from '../services/attestationService';
+import { getMockAttestation } from '../services/mockAttestationService';
+
+// Flag to use mock service for testing
+const USE_MOCK_SERVICE = true;
 
 /**
  * Prepare the contract call for buying tokens with attestation
@@ -23,12 +27,12 @@ export const prepareAttestedBuyTokenCall = async (configModule, referrerAddress,
       };
     }
 
-    // Get attestation from the backend
-    const attestation = await getAttestation(
-      referrerAddress,
-      paymentAmount.toString(), // Convert BigInt to string
-      chainId
-    );
+    // Get attestation from the backend or mock service
+    const attestation = USE_MOCK_SERVICE 
+      ? await getMockAttestation(referrerAddress, paymentAmount.toString(), chainId)
+      : await getAttestation(referrerAddress, paymentAmount.toString(), chainId);
+
+    console.log('Attestation received:', attestation);
 
     // Calculate the total value (purchase amount + sync fee)
     const totalValue = BigInt(paymentAmount) + BigInt(attestation.syncFee);
