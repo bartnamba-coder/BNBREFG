@@ -1,11 +1,22 @@
 <?php
-// Database configuration - Store in a file outside web root in production
-$db_config = [
+// Referral System Database Configuration
+$referral_db_config = [
     'host' => 'localhost',
-    'dbname' => 'your_database_name',  // Replace with your actual database name
-    'username' => 'your_db_username',  // Replace with your actual database username
-    'password' => 'your_db_password',  // Replace with your actual database password
+    'dbname' => 'your_referral_database',  // Your referral database name
+    'username' => 'referral_db_user',      // Your referral database username
+    'password' => 'referral_db_password',  // Your referral database password
 ];
+
+// Attestation System Database Configuration
+$attestation_db_config = [
+    'host' => 'localhost',
+    'dbname' => 'your_attestation_database',  // Your attestation database name
+    'username' => 'attestation_db_user',      // Your attestation database username
+    'password' => 'attestation_db_password',  // Your attestation database password
+];
+
+// For backward compatibility with existing code
+$db_config = $referral_db_config;
 
 // API Security Configuration
 $security_config = [
