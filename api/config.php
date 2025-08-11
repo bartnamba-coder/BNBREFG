@@ -56,24 +56,7 @@ $attestation_config = [
     'default_sync_fee_bps' => 50,
 ];
 
-// SQL for creating the necessary tables
-// CREATE TABLE IF NOT EXISTS global_referral_counts (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     referrer_address VARCHAR(42) NOT NULL,
-//     referral_count INT NOT NULL DEFAULT 0,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//     UNIQUE KEY (referrer_address)
-// );
-// 
-// CREATE TABLE IF NOT EXISTS referral_purchases (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     referrer_address VARCHAR(42) NOT NULL,
-//     buyer_address VARCHAR(42) NOT NULL,
-//     chain_id VARCHAR(20) NOT NULL,
-//     tx_hash VARCHAR(66) NOT NULL,
-//     usd_amount DECIMAL(18,6) NOT NULL,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     UNIQUE KEY (chain_id, tx_hash)
-// );
+// Database setup scripts
+// For referral database: setup_referral_db.sql
+// For attestation database: setup_attestation_db.sql
 ?>
