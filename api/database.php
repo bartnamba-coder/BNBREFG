@@ -4,15 +4,15 @@
 // Include configuration
 require_once 'config.php';
 
-// Function to get database connection
-function getDbConnection() {
-    global $db_config;
+// Function to get connection to the referral database
+function getReferralDbConnection() {
+    global $referral_db_config;
     
     try {
         $pdo = new PDO(
-            "mysql:host={$db_config['host']};dbname={$db_config['dbname']};charset=utf8mb4", 
-            $db_config['username'], 
-            $db_config['password']
+            "mysql:host={$referral_db_config['host']};dbname={$referral_db_config['dbname']};charset=utf8mb4", 
+            $referral_db_config['username'], 
+            $referral_db_config['password']
         );
         
         // Set PDO attributes for better error handling
@@ -23,11 +23,51 @@ function getDbConnection() {
         return $pdo;
     } catch(PDOException $e) {
         // Log the error
-        error_log("Database connection error: " . $e->getMessage());
+        error_log("Referral database connection error: " . $e->getMessage());
         
         // Return false to indicate connection failure
         return false;
     }
+}
+
+// Function to get connection to the attestation database
+function getAttestationDbConnection() {
+    global $attestation_db_config;
+    
+    try {
+        $pdo = new PDO(
+            "mysql:host={$attestation_db_config['host']};dbname={$attestation_db_config['dbname']};charset=utf8mb4", 
+            $attestation_db_config['username'], 
+            $attestation_db_config['password']
+        );
+        
+        // Set PDO attributes for better error handling
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        
+        return $pdo;
+    } catch(PDOException $e) {
+        // Log the error
+        error_log("Attestation database connection error: " . $e->getMessage());
+        
+        // Return false to indicate connection failure
+        return false;
+    }
+}
+
+// For backward compatibility - returns the appropriate connection based on the file that called it
+function getDbConnection() {
+    $callerFile = debug_backtrace()[0]['file'] ?? '';
+    $callerFile = basename($callerFile);
+    
+    // If the caller is an attestation-related file, return attestation DB connection
+    if (in_array($callerFile, ['attest.php', 'webhook.php', 'referral_tiers.php'])) {
+        return getAttestationDbConnection();
+    }
+    
+    // Otherwise return referral DB connection (default)
+    return getReferralDbConnection();
 }
 
 // Function to add a referral code
