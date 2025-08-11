@@ -92,6 +92,17 @@ function validateApiKey() {
 function handleCORS() {
     global $security_config;
     
+    // Allow requests from any origin during development/testing
+    // For production, you should restrict this to specific domains
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key");
+    header("Access-Control-Max-Age: 86400"); // 24 hours cache
+    
+    /* 
+    // Production CORS handling with specific origins
+    // Uncomment this section and comment out the "*" header above when ready for production
+    
     // Get origin
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
     
@@ -103,9 +114,7 @@ function handleCORS() {
         // In production, you might want to reject the request instead
         header("Access-Control-Allow-Origin: {$security_config['allowed_origins'][0]}");
     }
-    
-    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key');
+    */
     
     // Handle preflight OPTIONS request
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
